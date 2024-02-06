@@ -38,7 +38,29 @@ const resolvers = {
             const token = signToken(user);
             return { token, user };
         },
-        // mutation
+        // mutation to saveBook to user data
+        saveBook: async (parent, args, context) => {
+            if (context.user) {
+                return User.findOneAndUpdate(
+                    { _id: args._id },
+                    { $addToSet: { savedBooks: args.body } },
+                    { new: true, runValidators: true }
+                )
+            }
+            throw AuthenticationError;
+
+        },
+        deleteBook: async (parent, args, context) => {
+            if (context.user) {
+                return User.findOneAndUpdate(
+                    { _id: args.user._id },
+                    { $pull: { savedBooks: { bookId: args.bookId } } },
+                    { new: true }
+                );
+            }
+            throw AuthenticationError;
+        }
+
     }
 }
 
