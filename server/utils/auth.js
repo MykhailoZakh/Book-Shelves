@@ -1,10 +1,17 @@
 const jwt = require('jsonwebtoken');
-
+// Bringing GraphQLError from graphql package
+const { GraphQLError } = require('graphql');
 // set token secret and expiration date
 const secret = 'mysecretsshhhhh';
 const expiration = '2h';
 
 module.exports = {
+  // creating new obj that gives error when user is not loged in
+  AuthenticationError: new GraphQLError('Could not authenticate user.', {
+    extensions: {
+      code: 'UNAUTHENTICATED',
+    },
+  }),
   // function for our authenticated routes
   authMiddleware: function (req, res, next) {
     // allows token to be sent via  req.query or headers
