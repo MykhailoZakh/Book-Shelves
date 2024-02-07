@@ -1,69 +1,68 @@
-// import User module
-const { User } = require('../models');
-// import auth checker to add token of signed in user
+const { User, Thought } = require('../models');
 const { signToken, AuthenticationError } = require('../utils/auth');
-// object with Query and Mutations we will add to our routes
+
 const resolvers = {
-    Query: {
-        // query to find one user by id or username
-        user: async (parent, args, context) => {
-            return User.findOne({
-                $or: [{ _id: args.user ? args.id : args.id }, { username: args.username }]
-            })
-        }
+  Query: {
+
+    user: async (parent, { username, id }) => {
+      return User.findOne({ $or: [{ _id: id }, { username: username }] });
     },
 
-    Mutation: {
-        // mutation to create new user and add jwt token for authorization
-        createUser: async (parent, args) => {
-            const user = await User.create({ username: args.username, email: args.email, password: args.password });
-            if (!user) {
-                return alert(`Cannot create user`)
-            }
-            const token = signToken(user);
-            return { token, user };
-        },
-        // mutation to check user who wants to log in and add token if he is valid
-        login: async (parent, args) => {
-            const user = await User.findOne({ $or: [{ username: args.username }, { email: args.email }] });
-            if (!user) {
-                throw AuthenticationError;
-            }
+  },
 
-            const correctPw = await user.isCorrectPassword(args.password);
+  Mutation: {
+    createUser: async (parent, { username, email, password }) => {
+      const user = await User.create({ username, email, password });
+      if (!user) {
+        return alert(`Cannot create user`)
+      }
+      const token = signToken(user);
 
-            if (!correctPw) {
-                throw AuthenticationError;
-            }
-            const token = signToken(user);
-            return { token, user };
-        },
-        // mutation to saveBook to user data
-        saveBook: async (parent, args, context) => {
-            if (context.user) {
-                return User.findOneAndUpdate(
-                    { _id: args._id },
-                    { $addToSet: { savedBooks: args.body } },
-                    { new: true, runValidators: true }
-                )
-            }
-            throw AuthenticationError;
+      return { token, user };
+    },
+    login: async (parent, { email, password, username }) => {
+      const user = await User.findOne({ $or: [{ username: username }, { email: email }] });
 
-        },
-        // mutation to deleteBook from user data
-        deleteBook: async (parent, args, context) => {
-            if (context.user) {
-                return User.findOneAndUpdate(
-                    { _id: args.user._id },
-                    { $pull: { savedBooks: { bookId: args.bookId } } },
-                    { new: true }
-                );
-            }
-            throw AuthenticationError;
-        }
+      if (!user) {
+        throw AuthenticationError;
+      }
+      // console.log(user);
+      const correctPw = await user.isCorrectPassword(user.password);
 
+      if (!correctPw) {
+        console.log(`work here`)
+        throw AuthenticationError;
+      }
+
+      const token = signToken(user);
+
+      return { token, user };
+    },
+    // mutation to saveBook to user data
+    saveBook: async (parent, { _id, description, bookId, image, link, title }, context) => {
+      // if (context.user) {
+      // console.log(args)
+      return User.findOneAndUpdate(
+        { _id: _id },
+        { $addToSet: { savedBooks: { description, bookId, image, link, title } } },
+        { new: true, runValidators: true }
+      )
+      // }
+      throw AuthenticationError;
+
+    },
+    // mutation to deleteBook from user data
+    deleteBook: async (parent, args, context) => {
+      if (context.user) {
+        return User.findOneAndUpdate(
+          { _id: args.user._id },
+          { $pull: { savedBooks: { bookId: args.bookId } } },
+          { new: true }
+        );
+      }
+      throw AuthenticationError;
     }
-}
-
+  }
+};
 
 module.exports = resolvers;
