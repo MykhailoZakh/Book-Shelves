@@ -1,8 +1,12 @@
+// import User module
 const { User } = require('../models');
+// import auth checker to add token of signed in user
 const { signToken, AuthenticationError } = require('../utils/auth');
+// object with Query and Mutations we will add to our routes
 
 const resolvers = {
   Query: {
+    // query to find one user by id or username
 
     user: async (parent, { username, id }) => {
       return User.findOne({ $or: [{ _id: id }, { username: username }] });
@@ -11,6 +15,8 @@ const resolvers = {
   },
 
   Mutation: {
+    // mutation to create new user and add jwt token for authorization
+
     createUser: async (parent, { username, email, password }) => {
       const user = await User.create({ username, email, password });
       if (!user) {
@@ -20,6 +26,8 @@ const resolvers = {
 
       return { token, user };
     },
+    // mutation to check user who wants to log in and add token if he is valid
+
     login: async (parent, { email, password, username }) => {
       const user = await User.findOne({ $or: [{ username: username }, { email: email }] });
 
