@@ -1,4 +1,4 @@
-const { User, Thought } = require('../models');
+const { User } = require('../models');
 const { signToken, AuthenticationError } = require('../utils/auth');
 
 const resolvers = {
@@ -39,9 +39,20 @@ const resolvers = {
       return { token, user };
     },
     // mutation to saveBook to user data
-    saveBook: async (parent, { _id, description, bookId, image, link, title }, context) => {
+    saveBook: async (parent, { _id, description, bookId, image, link, title, author }, context) => {
       // if (context.user) {
       // console.log(args)
+      // const newBook = {
+      //   description: description,
+      //   bookId: bookId,
+      //   image: image,
+      //   link: link,
+      //   title: title,
+      //   authors: [{
+      //     type: author
+      //   }]
+      // }
+      { description, bookId, image, link, title }
       return User.findOneAndUpdate(
         { _id: _id },
         { $addToSet: { savedBooks: { description, bookId, image, link, title } } },
@@ -52,14 +63,14 @@ const resolvers = {
 
     },
     // mutation to deleteBook from user data
-    deleteBook: async (parent, args, context) => {
-      if (context.user) {
-        return User.findOneAndUpdate(
-          { _id: args.user._id },
-          { $pull: { savedBooks: { bookId: args.bookId } } },
-          { new: true }
-        );
-      }
+    deleteBook: async (parent, { _id, bookId }, context) => {
+      // if (context.user) {
+      return User.findOneAndUpdate(
+        { _id: _id },
+        { $pull: { savedBooks: { bookId: bookId } } },
+        { new: true }
+      );
+      // }
       throw AuthenticationError;
     }
   }

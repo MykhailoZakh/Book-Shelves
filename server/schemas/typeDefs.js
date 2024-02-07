@@ -37,7 +37,7 @@ type Author {
   type Mutation {
     createUser(username: String!, email: String!, password: String!): Auth
     login(email: String!, password: String!, username: String!): Auth
-    saveBook(_id: ID!, description: String, bookId: String, image: String, link: String, title: String): User
+    saveBook(_id: ID!, description: String, bookId: String, image: String, link: String, title: String, author: String): User
     deleteBook(_id: ID!, bookId: ID!): User
   }
 `;
