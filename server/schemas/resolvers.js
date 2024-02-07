@@ -8,7 +8,7 @@ const resolvers = {
         // query to find one user by id or username
         user: async (parent, args, context) => {
             return User.findOne({
-                $or: [{ _id: parent.user ? parent.id : args.id }, { username: args.username }]
+                $or: [{ _id: args.user ? args.id : args.id }, { username: args.username }]
             })
         }
     },
@@ -50,6 +50,7 @@ const resolvers = {
             throw AuthenticationError;
 
         },
+        // mutation to deleteBook from user data
         deleteBook: async (parent, args, context) => {
             if (context.user) {
                 return User.findOneAndUpdate(
