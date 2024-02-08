@@ -20,3 +20,22 @@ query GetUser($username: String!, $userId: ID!) {
     }
   }
 `
+
+export const QUERY_USERS = gql`
+query FindUser($username: String!) {
+  user1(username: $username) {
+    username
+    email
+    _id
+    savedBooks {
+      _id
+      description
+      bookId
+      image
+      link
+      title
+      authors
+    }
+  }
+}
+`

@@ -63,7 +63,7 @@ const SearchBooks = () => {
 
     // get token
     const token = Auth.loggedIn() ? Auth.getToken() : null;
-
+    console.log(bookToSave);
     if (!token) {
       return false;
     }
@@ -79,6 +79,7 @@ const SearchBooks = () => {
           description: bookToSave.description,
           image: bookToSave.image,
           title: bookToSave.title,
+          authors: bookToSave.authors,
         },
       });
       console.log(data);

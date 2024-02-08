@@ -11,7 +11,9 @@ const resolvers = {
     user: async (parent, { username, id }) => {
       return User.findOne({ $or: [{ _id: id }, { username: username }] });
     },
-
+    user1: async (parent, { username }) => {
+      return User.findOne({ username });
+    },
   },
 
   Mutation: {
@@ -28,13 +30,12 @@ const resolvers = {
     },
     // mutation to check user who wants to log in and add token if he is valid
 
-    login: async (parent, { email, password, username }) => {
-      const user = await User.findOne({ $or: [{ username: username }, { email: email }] });
+    login: async (parent, { email, password }) => {
+      const user = await User.findOne({ email: email });
 
       if (!user) {
         throw AuthenticationError;
       }
-      // console.log(user);
       const correctPw = await user.isCorrectPassword(password);
 
       if (!correctPw) {
@@ -47,25 +48,19 @@ const resolvers = {
       return { token, user };
     },
     // mutation to saveBook to user data
-    saveBook: async (parent, { _id, description, bookId, image, link, title }, context) => {
-      // if (context.user) {
-      // console.log(args)
-      // const newBook = {
-      //   description: description,
-      //   bookId: bookId,
-      //   image: image,
-      //   link: link,
-      //   title: title,
-      //   authors: [{
-      //     type: author
-      //   }]
-      // }
-      // { description, bookId, image, link, title }
-      return User.findOneAndUpdate(
-        { _id: _id },
-        { $addToSet: { savedBooks: { description, bookId, image, link, title } } },
-        { new: true, runValidators: true }
-      )
+    saveBook: async (parent, { _id, description, bookId, image, link, title, authors }, context) => {
+      console.log(authors);
+      try {
+        let user = User.findOneAndUpdate(
+          { _id: _id },
+          { $addToSet: { savedBooks: { description, bookId, image, link, title, authors } } },
+          { new: true, runValidators: true }
+        )
+        return user
+      } catch (error) {
+        console.error(error)
+      }
+
       // }
       throw AuthenticationError;
 
