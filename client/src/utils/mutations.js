@@ -44,7 +44,7 @@ mutation CreateUser($username: String!, $email: String!, $password: String!) {
   `;
 
 export const SAVE_BOOK = gql`
-mutation SaveBook($id: ID!, $description: String, $bookId: String, $image: String, $link: String, $title: String, $authors: String) {
+mutation SaveBook($id: ID!, $description: String, $bookId: String, $image: String, $link: String, $title: String) {
     saveBook(_id: $id, description: $description, bookId: $bookId, image: $image, link: $link, title: $title) {
       _id
       savedBooks {
@@ -58,8 +58,6 @@ mutation SaveBook($id: ID!, $description: String, $bookId: String, $image: Strin
           type
         }
       }
-      username
-      email
     }
   }
 `;

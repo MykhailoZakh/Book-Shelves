@@ -35,7 +35,7 @@ const resolvers = {
         throw AuthenticationError;
       }
       // console.log(user);
-      const correctPw = await user.isCorrectPassword(user.password);
+      const correctPw = await user.isCorrectPassword(password);
 
       if (!correctPw) {
         console.log(`work here`)
@@ -47,7 +47,7 @@ const resolvers = {
       return { token, user };
     },
     // mutation to saveBook to user data
-    saveBook: async (parent, { _id, description, bookId, image, link, title, author }, context) => {
+    saveBook: async (parent, { _id, description, bookId, image, link, title }, context) => {
       // if (context.user) {
       // console.log(args)
       // const newBook = {
@@ -60,7 +60,7 @@ const resolvers = {
       //     type: author
       //   }]
       // }
-      { description, bookId, image, link, title }
+      // { description, bookId, image, link, title }
       return User.findOneAndUpdate(
         { _id: _id },
         { $addToSet: { savedBooks: { description, bookId, image, link, title } } },

@@ -69,9 +69,20 @@ const SearchBooks = () => {
     }
 
     try {
-      const response = await saveBook(bookToSave, token);
-
-      if (!response.ok) {
+      const id = Auth.getProfile().data._id;
+      console.log(Auth.getProfile());
+      console.log(bookToSave);
+      const {data} = await saveBook({
+        variables: {
+          id: id,
+          bookId: bookToSave.bookId,
+          description: bookToSave.description,
+          image: bookToSave.image,
+          title: bookToSave.title,
+        },
+      });
+      console.log(data);
+      if (!data) {
         throw new Error("something went wrong!");
       }
 
