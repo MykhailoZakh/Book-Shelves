@@ -9,7 +9,6 @@ import Auth from "../utils/auth";
 import {removeBookId} from "../utils/localStorage";
 
 const SavedBooks = () => {
-  const [loading, data] = useQuery(QUERY_USER);
   const [deleteBook, {error}] = useMutation(DELETE_BOOK, {
     refetchQueries: [QUERY_USER, "user"],
   });
@@ -20,23 +19,33 @@ const SavedBooks = () => {
 
   useEffect(() => {
     const getUserData = async () => {
-      try {
-        const token = Auth.loggedIn() ? Auth.getToken() : null;
+      // try {
+      //   const token = Auth.loggedIn() ? Auth.getToken() : null;
+      //   console.log(token);
+      //   if (!token) {
+      //     return false;
+      //   }
 
-        if (!token) {
-          return false;
-        }
+      //   const response = await getMe(token);
 
-        const response = await getMe(token);
+      //   if (!response.ok) {
+      //     throw new Error("something went wrong!");
+      //   }
 
-        if (!response.ok) {
-          throw new Error("something went wrong!");
-        }
+      //   const user = await response.json();
+      //   setUserData(user);
+      // } catch (err) {
+      //   console.error(err);
+      // }
+      if (Auth.loggedIn()) {
+        const obj = Auth.getProfile();
+        console.log(obj);
 
-        const user = await response.json();
-        setUserData(user);
-      } catch (err) {
-        console.error(err);
+        const [loading, data] = useQuery(QUERY_USER, {
+          variables: {username: obj.data.username, id: obj.data._id},
+        });
+        console.log(data);
+        setUserData(data);
       }
     };
 
@@ -52,16 +61,16 @@ const SavedBooks = () => {
     }
 
     try {
-      const response = await deleteBook(bookId, token);
+      const response = await deleteBook(bookId);
 
       if (!response.ok) {
         throw new Error("something went wrong!");
       }
 
-      const updatedUser = await response.json();
-      setUserData(updatedUser);
-      // upon success, remove book's id from localStorage
-      removeBookId(bookId);
+      // const updatedUser = await response.json();
+      // setUserData(updatedUser);
+      // // upon success, remove book's id from localStorage
+      // removeBookId(bookId);
     } catch (err) {
       console.error(err);
     }
