@@ -39,7 +39,6 @@ const resolvers = {
       const correctPw = await user.isCorrectPassword(password);
 
       if (!correctPw) {
-        console.log(`work here`)
         throw AuthenticationError;
       }
 
@@ -49,7 +48,6 @@ const resolvers = {
     },
     // mutation to saveBook to user data
     saveBook: async (parent, { _id, description, bookId, image, link, title, authors }, context) => {
-      console.log(authors);
       try {
         let user = User.findOneAndUpdate(
           { _id: _id },

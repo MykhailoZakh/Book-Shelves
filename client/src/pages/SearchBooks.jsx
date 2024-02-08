@@ -82,7 +82,7 @@ const SearchBooks = () => {
           authors: bookToSave.authors,
         },
       });
-      console.log(data);
+
       if (!data) {
         throw new Error("something went wrong!");
       }
